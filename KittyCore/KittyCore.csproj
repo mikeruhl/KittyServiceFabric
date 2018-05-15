@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="3.1.274" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.ServiceFabric.Services.Remoting">
+      <HintPath>..\..\..\..\.nuget\packages\microsoft.servicefabric.services.remoting\3.1.274\ref\netstandard2.0\Microsoft.ServiceFabric.Services.Remoting.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
