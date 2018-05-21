@@ -17,6 +17,9 @@
         <Program>KittyGotBack.exe</Program>
       </ExeHost>
     </EntryPoint>
+    <EnvironmentVariables>
+      <EnvironmentVariable Name="containerConnectionString" Value="default"/>
+    </EnvironmentVariables>
   </CodePackage>
 
   <!-- Config package is the contents of the Config directoy under PackageRoot that contains an 
