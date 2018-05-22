@@ -18,7 +18,7 @@
       </ExeHost>
     </EntryPoint>
     <EnvironmentVariables>
-      <EnvironmentVariable Name="containerConnectionString" Value="default"/>
+      <EnvironmentVariable Name="containerConnectionString" Value="PASTE HERE!"/>
     </EnvironmentVariables>
   </CodePackage>
 
