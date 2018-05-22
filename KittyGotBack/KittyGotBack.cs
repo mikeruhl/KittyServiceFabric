@@ -48,10 +48,14 @@ namespace KittyGotBack
                 ServiceEventSource.Current.ServiceMessage(Context, "Connected to storage account");
                 var operationContext = new OperationContext();
                 var client = storageAccount.CreateCloudBlobClient();
-                _blobContainer = client.GetContainerReference("blobberino");
-                await _blobContainer.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Off,
+                _blobContainer = client.GetContainerReference("kitties");
+                if (await _blobContainer.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Off,
                     new BlobRequestOptions(),
-                    operationContext, cancellationToken);
+                    operationContext, cancellationToken))
+                {
+                    var kitties = await StateManager.GetOrAddAsync<IReliableDictionary<string, string>>("kitties");
+                    await kitties.ClearAsync();
+                }
                 return;
             }
 
@@ -67,7 +71,7 @@ namespace KittyGotBack
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service replica.</param>
         public async Task<byte[]> GetImageAsync(int width, int height)
         {
-            var kitties = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, string>>("kitties");
+            var kitties = await StateManager.GetOrAddAsync<IReliableDictionary<string, string>>("kitties");
 
             var requestKey = $"{width}x{height}";
 
@@ -78,11 +82,19 @@ namespace KittyGotBack
                 if (result.HasValue)
                 {
                     var blobRef = _blobContainer.GetBlockBlobReference(result.Value);
-                    await blobRef.FetchAttributesAsync();
-                    var imageArray = new byte[blobRef.Properties.Length];
-                    await blobRef.DownloadToByteArrayAsync(imageArray, 0);
-                    ServiceEventSource.Current.ServiceMessage(Context, $"Found image in Azure cache, returning: {requestKey}.");
-                    return imageArray;
+                    if (!await blobRef.ExistsAsync())
+                    {
+                        await kitties.TryRemoveAsync(tx, requestKey);
+                    }
+                    else
+                    {
+                        await blobRef.FetchAttributesAsync();
+                        var imageArray = new byte[blobRef.Properties.Length];
+                        await blobRef.DownloadToByteArrayAsync(imageArray, 0);
+                        ServiceEventSource.Current.ServiceMessage(Context, $"Found image in Azure cache, returning: {requestKey}.");
+                        return imageArray;
+                    }
+
                 }
 
 
