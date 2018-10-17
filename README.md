@@ -8,8 +8,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-- Service Fabric SDK (if running locally)
-- Azure Storage Account
+- [Service Fabric SDK}(https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-get-started)
+- Azure Storage Account -or- [Azure Storage Emulator](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator)
 - Visual Studio or MSBuild and a Text Editor
 - .NET Core 2.+
 
@@ -19,6 +19,7 @@ Microsoft provides a [free Service Fabric cluster](https://try.servicefabric.azu
 
 Once cloned, you'll have to provide your connection string to your storage account.  To get this, go into your Storage Account and click on Access Keys.  you'll find "Connection String" at the bottom of the list.
 
+## Using Azure Storage Account
 Copy and paste that into KittyGotBack/PackageRoot/ServiceManifest.xml:
 ```
   <CodePackage Name="Code" Version="1.0.0">
@@ -32,10 +33,23 @@ Copy and paste that into KittyGotBack/PackageRoot/ServiceManifest.xml:
     </EnvironmentVariables>
   </CodePackage>
 ```
+## Using Azure Storage Emulator
+A new alternative to using Azure Storage is to use the emulator. Download and instructions on setting up can be found [here](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator)
 
+Once you run init and start, the only config changes you need to make (provided you used default settings) is to set the connection string to set the variable mentioned above to:
+```
+<EnvironmentVariable Name="containerConnectionString" Value="UseDevelopmentStorage=true"/>
+```
+---
 Once your connection string is in there, you can debug or deploy this application to see it's wonderous effects.  
 
-Hit /api/kitties/300/300 for an initial image.  Change those numbers to get different sized kitty pictures.
+To debug locally, choose BuildConfiguration Debug and Platform x64.
+
+Use your favorite REST tool like Postman to perform a GET on http://localhost:8943/api/kitties/300/300
+
+The url path spec is /api/kitties/{width}/{height}
+
+Change those numbers to get different sized kitty pictures.
 
 ## Running the tests
 
